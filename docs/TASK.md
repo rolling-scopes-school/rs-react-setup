@@ -1,0 +1,113 @@
+# Task 3 — State Management + Context (AI era)
+
+> Part of the revised React core. See the program rationale in
+> [`react/.instructions/AI_ERA_PROGRAM.md`](../../.instructions/AI_ERA_PROGRAM.md).
+> This task is **independent** — build it from scratch with function components, routing, and a state library.
+
+> ℹ️ **Note:** this is a copy of the task spec placed inside the starter repo so the AI instruction
+> files can reference it. The `../` links below (theory modules, program doc) resolve in the **course
+> repository**, not from inside this starter. A future iteration will replace them with direct GitHub
+> links to the canonical, finalized task.
+
+## 🧠 What you'll build
+
+A **Mini-shop**: a product list, a cart with quantities and totals, and a light/dark theme switch. The
+focus is **global state management** (a dedicated store) and understanding **when to use Context vs a
+store**.
+
+Suggested API: **[FakeStore API](https://fakestoreapi.com/)** (no key) or a local `products.json`.
+**No backend** — the focus is React state.
+
+## 🎯 Skills / Learning objectives
+
+- Manage **global state** with a store (Redux Toolkit **or** Zustand), using **partial updates** so only
+  the components that use a slice re-render.
+- Use **React Context** for cross-cutting UI concerns (theme).
+- Understand and articulate the **context-vs-store distinction**: Context has **no selective
+  subscription** — every consumer re-renders on any value change — so it fits theme/i18n but is a poor
+  fit for frequently-changing state.
+
+## 📖 Required theory
+
+- [State management (Redux Toolkit / Zustand)](../state-management/README.md)
+- [Context API](../context-api/README.md)
+- [Playwright](https://playwright.dev/docs/intro) — end-to-end testing.
+
+## 🤖 Working with AI (required)
+
+The AI **coaches, you decide**. Keep a mandatory **`CHANGELOG.md`** (per-session steps + justified decisions).
+See the full protocol in [`AI_ERA_PROGRAM.md`](../../.instructions/AI_ERA_PROGRAM.md).
+Start from the starter repo [`react/repos/state-management/`](../../repos/state-management/) — it ships the coaching
+harness (`AGENTS.md` + mirrors, `CHANGELOG.md`) and the reading for each decision in `docs/`.
+
+**Decision points for this task:**
+
+- **State library:** Redux Toolkit **or** Zustand. AI presents tradeoffs **neutrally**; you choose and
+  justify. The AI should remind you this choice **pairs with the query library** in Task 4 (Redux→RTK
+  Query; Zustand→TanStack Query) — but must **not** influence your decision.
+- **Store shape / slices** (products, cart).
+- **What belongs in Context vs the store** (theme vs cart).
+- **E2E scope & structure:** which flows to cover with Playwright (add to cart, change quantity, cart
+  persists across navigation, theme toggle) and how to organize the specs.
+
+## Functional Requirements (max **100 points**)
+
+### Feature 1: Project setup (**5 points**)
+
+- Vite `react-ts` + Oxlint + Oxfmt + Husky. TypeScript throughout; no `any`/`ts-ignore`.
+
+### Feature 2: State library set up (**15 points**)
+
+- Redux Toolkit **or** Zustand integrated and configured; store used for app state.
+
+### Feature 3: Products + cart in the store (**15 points**)
+
+- Product list rendered; users can **add / remove / change quantity** of cart items.
+- Cart lives in the **store** with partial updates (adding an item doesn't needlessly re-render unrelated UI).
+
+### Feature 4: Cart summary/flyout (**15 points**)
+
+- A cart summary (e.g., sticky flyout) shows item count and totals and **persists across navigation**.
+
+### Feature 5: Theme via Context API (**15 points**)
+
+- A light/dark theme switch implemented with **Context API**, affecting the whole app; control at the top.
+
+### Feature 6: Context-vs-store rationale (**5 points**)
+
+- A short written rationale (in `README.md` or `CHANGELOG.md`) explaining why theme is in Context and cart is in the store.
+
+### Feature 7: Cart persistence (**5 points**)
+
+- Cart persists to `localStorage` across reloads.
+
+### Feature 8: Unit tests (**10 points**)
+
+- Vitest + RTL tests for the store (slice/actions/selectors), components, and the theme context. Coverage ≥ thresholds.
+
+### Feature 9: End-to-end tests (Playwright) (**15 points**)
+
+- Playwright E2E specs in `e2e/` cover the key journeys (add to cart, change quantity, cart persists across
+  navigation, theme toggle). Run against the built app (`pnpm build && pnpm preview`) and pass headlessly.
+
+## Technical Requirements
+
+1. Fresh repository; dedicated branch; first commit only `README.md`.
+2. Stack: **Vite + React + TS + Oxlint + Oxfmt + Husky + Vitest + RTL + Playwright** + chosen state library.
+3. No direct state mutation (Redux/Zustand). Direct DOM only for theme attribute toggling in a `useEffect`.
+4. Keep a `CHANGELOG.md`.
+
+## Penalties
+
+- TypeScript not used: **-95** · each `any`: **-20** · each `ts-ignore`: **-20**.
+- Direct state mutation in the store: **-20 each**.
+- Direct DOM manipulation (except theme attribute toggling in `useEffect`): **-50 each**.
+- Component libraries (MUI/AntD): **-100**.
+- Coverage below thresholds: statements <80% (≥70%): **-10**; <70% (≥50%): **-30**; all <50%: **-50**.
+- No E2E (Playwright) tests: **-30**.
+- Missing `CHANGELOG.md`: **-90**.
+
+## FAQ
+
+**Redux Toolkit or Zustand?** Your choice — justify in `CHANGELOG.md`. AI stays neutral, but reminds you it pairs with Task 4.
+**Why not put the cart in Context?** Explain this in your rationale.

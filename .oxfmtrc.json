@@ -4,5 +4,5 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "printWidth": 100,
-  "ignorePatterns": ["dist", "coverage", "node_modules", "scripts"]
+  "ignorePatterns": [".next", "out", "coverage", "node_modules", "scripts", "next-env.d.ts"]
 }

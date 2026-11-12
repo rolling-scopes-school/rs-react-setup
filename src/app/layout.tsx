@@ -12,31 +12,16 @@
  * Integrity is checked by scripts/verify-harness.mjs (pre-commit, pre-push, CI).
  * ===================== /AI-COACH-RULES =====================
  */
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import type { Metadata } from 'next';
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.ts',
-    css: true,
-    // Vitest owns unit/component tests under src/; Playwright owns e2e/ (keep the globs separate).
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      // Enforce the task's coverage bar (see TASK.md — statements >= 80%).
-      thresholds: {
-        statements: 80,
-        branches: 50,
-        functions: 50,
-        lines: 80,
-      },
-      exclude: ['src/main.tsx', 'src/vite-env.d.ts', '**/*.config.*', '**/*.test.{ts,tsx}'],
-    },
-  },
-});
+export const metadata: Metadata = {
+  title: 'Next.js SSR / SSG — RS React Task 8',
+};
+
+export default function RootLayout({ children }: LayoutProps<'/'>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}

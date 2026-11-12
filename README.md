@@ -1,15 +1,15 @@
-# RS React — starter template
+# RS React — Task 8 starter (Next.js SSR / SSG)
 
-The **task-less template** for RS School React course starters (AI era). Every task repo is generated from
-it: same toolchain, same AI coaching harness, with the task spec and theory dropped into `docs/`. You build
-the app described in `docs/TASK.md` **with an AI assistant coaching you**, not writing it for you.
+A pre-configured starter for **Task 8** of the RS School React course (AI era). You build a
+**server-rendered app with Next.js (App Router)** from scratch — search results with a detail panel, an SSG
+About page, a 404 page, i18n with next-intl, `next/image`, and a server-side CSV export — using **React
+Server Components** and **server actions**, plus **end-to-end tests** (Playwright) —
+**with an AI assistant coaching you**, not writing it for you.
 
-- 📋 **What to build:** [`docs/TASK.md`](./docs/TASK.md) — requirements, feature/points breakdown, penalties
-  (empty in the template).
-- 📚 **What to read:** [`docs/`](./docs/) — the task spec, curated theory per topic, and an index
-  ([`docs/README.md`](./docs/README.md)) mapping each decision to its reading.
-- 🤖 **How the AI must help you:** [`AGENTS.md`](./AGENTS.md) — the coaching contract (canonical source:
-  `CLAUDE.md`).
+- 📋 **What to build:** [`docs/TASK.md`](./docs/TASK.md) — full requirements, feature/points breakdown, penalties.
+- 📚 **What to read:** [`docs/`](./docs/) — the task spec plus curated theory ([`docs/nextjs.md`](./docs/nextjs.md))
+  and an index ([`docs/README.md`](./docs/README.md)) mapping each decision to its reading.
+- 🤖 **How the AI must help you:** [`CLAUDE.md`](./CLAUDE.md) — the coaching contract (canonical).
 - 📝 **Your decision log:** [`CHANGELOG.md`](./CHANGELOG.md) — **mandatory** (missing = -90 points).
 
 ## Quick start
@@ -19,28 +19,30 @@ This project uses **pnpm** (recommended). Install it once with `corepack enable`
 
 ```sh
 pnpm install     # install dependencies + set up Husky hooks
-pnpm dev         # start Vite dev server
-pnpm test        # run Vitest (unit/component) once
-pnpm coverage    # run unit tests with coverage (statements >= 80% required)
-pnpm e2e         # run Playwright end-to-end tests (builds + serves the app)
-pnpm lint        # Oxlint
+pnpm dev         # start the Next.js dev server
+pnpm build       # production build (next build)
+pnpm start       # serve the production build (next start)
+pnpm typecheck   # generate route types + tsc --noEmit
+pnpm e2e         # run Playwright end-to-end tests (builds + starts the production server)
+pnpm lint        # ESLint (Next.js defaults)
 pnpm format      # Oxfmt (check); pnpm format:fix to write
-pnpm build       # type-check + production build
 ```
 
 > First E2E run: `pnpm exec playwright install chromium` downloads the browser once.
 
 ## What's already set up
 
-- **Vite + React 19 + TypeScript** (`strict`, no `any`, no `ts-ignore`).
-- **Oxlint** (`.oxlintrc.json` — recommended + React/TypeScript/jsx-a11y) as the linter.
-- **Oxfmt** (`.oxfmtrc.json`) as the formatter — one unified oxc toolchain with Oxlint.
-- **Vitest + React Testing Library + jsdom + jest-dom** for unit/component tests (a smoke test is in
-  `src/App.test.tsx` — replace it with real tests).
+- **Next.js 16 (App Router) + React 19 + TypeScript** (`strict`, no `any`, no `ts-ignore`), scaffolded with
+  `create-next-app` (`src/app/`, `@/*` import alias). `next.config.ts` keeps the scaffold defaults.
+- **ESLint** (`eslint.config.mjs` — `eslint-config-next` core-web-vitals + TypeScript) as the linter. This
+  task is the course's **Oxlint carve-out**: Next.js ships and documents its own ESLint config.
+- **Oxfmt** (`.oxfmtrc.json`) as the formatter.
 - **Playwright** for end-to-end tests (config in `playwright.config.ts`, specs in `e2e/`; a smoke spec is
-  included). Vitest owns `src/**`, Playwright owns `e2e/**` — separate globs.
+  included). E2E runs against the **production server** (`pnpm build && pnpm start`).
+- **No unit-test runner.** The task grades E2E only; add Vitest + RTL yourself if you want unit tests for
+  client components or pure helpers (async server components are best covered by E2E).
 - **Husky** hooks: pre-commit runs `verify:harness` + `lint` + `format`, pre-push runs
-  `verify:harness` + `test`. (E2E runs in CI, not in local hooks — browser downloads are heavy.)
+  `verify:harness` + `typecheck`. (E2E runs in CI, not in local hooks — browser downloads are heavy.)
 - **Per-assistant enforcement hooks** (on top of the instruction files below):
   - **Claude Code** (`.claude/settings.json`): starts in **plan mode**, uses the course's **Coach** output
     style (`.claude/output-styles/coach.md`, part of the system prompt), and a `UserPromptSubmit` hook
@@ -52,7 +54,6 @@ pnpm build       # type-check + production build
 - **Coaching skills** (`.claude/skills/`, mirrored to `.agents/skills/`) — see [below](#coaching-skills).
 - **Playwright MCP, opt-in** (`.mcp.json`, `.cursor/mcp.json`, `.codex/config.toml`) — see
   [below](#browser-mcp-playwright-opt-in).
-- Optional: add **MSW** yourself if you prefer it over Vitest mocks for the network layer.
 
 ## Working with your AI assistant
 
@@ -125,18 +126,3 @@ headless, and configured with `--codegen none`.
 > It will **not write your E2E tests** — those are graded work. Playwright's test agents
 > (`npx playwright init-agents`: planner / generator / healer) are not allowed here, and the harness check
 > fails if their files appear.
-
-## Generating a task repo from this template (course authors)
-
-1. Copy the folder (without `node_modules`) to `react/repos/<slug>/`.
-2. `package.json`: set `name` and `aiCoaching.task` (e.g. `"Task 3"`) — the mirror headers read this label.
-3. `docs/TASK.md`: paste the task spec. Add one theory file per topic (copied from `react/modules/<topic>/`)
-   and fill the decision → reading table in `docs/README.md`.
-4. `CLAUDE.md`: set the H1, §1 context (the app being built), and §4 task-specific decision points
-   (options + criteria + reading — never a recommended pick). Then run `pnpm instructions:sync`.
-5. `scripts/verify-harness.mjs`: add the theory file(s) to `docsFiles`.
-6. `.claude/settings.json` → `skillOverrides`: switch on the task's topic skills.
-7. **Tasks without E2E (1, 7):** remove `@playwright/test`, `playwright.config.ts`, `e2e/`, the `e2e*` scripts,
-   the CI browser/E2E steps, and `playwright.config.ts` from `sentinelFiles`.
-8. Rename the placeholder heading (`index.html` title, `src/App.tsx`, both smoke tests), set the
-   `CHANGELOG.md` title, then run `pnpm install && pnpm verify:harness && pnpm lint && pnpm format && pnpm test`.

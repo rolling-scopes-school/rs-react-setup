@@ -12,17 +12,12 @@
  * Integrity is checked by scripts/verify-harness.mjs (pre-commit, pre-push, CI).
  * ===================== /AI-COACH-RULES =====================
  */
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { App } from './App.tsx';
+import type { NextConfig } from 'next';
 
-const rootElement = document.querySelector('#root');
-if (!rootElement) {
-  throw new Error('Root element #root was not found in index.html');
-}
+// https://nextjs.org/docs/app/api-reference/config/next-config-js
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+  partialPrefetching: true,
+};
 
-createRoot(rootElement).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+export default nextConfig;

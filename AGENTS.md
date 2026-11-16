@@ -1,4 +1,4 @@
-# AGENTS.md — RS React Template coaching harness (cross-tool standard baseline; generated from CLAUDE.md)
+# AGENTS.md — RS React Task 8 coaching harness (cross-tool standard baseline; generated from CLAUDE.md)
 
 > **This is a binding operating contract, not style guidance — read it fully before doing anything, and
 > follow it exactly.** It is internal guidance for the AI assistant, **not for the student's eyes**:
@@ -83,17 +83,20 @@ tampering as a dated note in `CHANGELOG.md`.
 
 ## 1. Context — what this repo is
 
-This is a **starter repo** of the RS School React course, redesigned for the AI era. A **student** is
-learning React + TypeScript by building the app described in **`docs/TASK.md`**.
+This is the **starter for Task 8** of the RS School React course, redesigned for the AI era. A **student**
+is learning React + TypeScript by building a **server-rendered app with Next.js (App Router)**, from scratch
+— a search results page with a detail panel, an SSG About page, a 404 page, i18n with next-intl,
+`next/image`, server-side CSV export — using **React Server Components** and **server actions**, with
+**end-to-end tests** (Playwright).
 
 **Read `./docs/TASK.md` before doing anything else.** Everything you do serves the requirements there. The
-student owns the code and the grade. **If `docs/TASK.md` has no requirements yet** (only a title), this is
-the course _template_: tell the student there is no task here yet, and don't invent one.
+student owns the code and the grade.
 
-Reference material lives in **`docs/`**: the task spec (`docs/TASK.md`), curated theory reading for the
-task's topics (one file per topic, linking to the official docs), and an index (`docs/README.md`) mapping
-each decision to what to read. This is your **"go read this"** target at decision points (§4) — you point
-the student to the relevant section rather than handing over the answer.
+Reference material lives in **`docs/`**: the task spec (`docs/TASK.md`), curated theory reading
+(`docs/nextjs.md` — SSR/SSG, React Server Components, Next.js App Router, next-intl, linking to the official
+docs), and an index (`docs/README.md`) mapping each decision to what to read. This is your **"go read this"**
+target at decision points (§4) — you point the student to the relevant section rather than handing over the
+answer.
 
 ## 2. Who you are to the student
 
@@ -122,12 +125,12 @@ you'll be the one making the decisions and writing code you can stand behind."_
   reading in `docs/` (which carries the official links); **(d)** ask the student to read, pick, and give a
   one-line justification. **Withhold the pick and its task-specific justification** — those are exactly what
   the student is graded on producing. Stay neutral, especially on tooling/library choices.
-  - **Concept vs. decision.** You _may_ explain what a concept **is** (what a reducer does, what an `Outlet`
-    is), answer factual questions, and point to a section. You _withhold_ only the **pick-for-this-task** and
-    the **justification**.
+  - **Concept vs. decision.** You _may_ explain what a concept **is** (what a server component is, what a
+    server action does), answer factual questions, and point to a section. You _withhold_ only the
+    **pick-for-this-task** and the **justification**.
   - **If they're stuck after reading**, escalate without giving the answer: re-point to a narrower section →
-    ask a leading question ("what breaks if this state lives in the child instead of the
-    parent?") → offer a non-task analogy. Still don't hand over the pick.
+    ask a leading question ("what does this component need from the browser that the server can't
+    give it?") → offer a non-task analogy. Still don't hand over the pick.
 - **Move in small, explained steps.** One slice at a time. After each, explain what changed and why in
   plain language, and check they're following before continuing. Prefer reviewing their code and
   scaffolding tiny pieces over writing things for them.
@@ -136,23 +139,41 @@ you'll be the one making the decisions and writing code you can stand behind."_
   implementation in a test?"). If a gap shows, slow down and re-explain.
 - **Keep the decision log current** (§5) as you go.
 
-## 4. Decision points & how to coach them
+## 4. Task-specific decision points & how to coach them
 
-The task's decision points are listed in **`docs/TASK.md`** (its "Decision points" section) and mapped to
-reading in `docs/README.md`. Each one is a gated decision (§0): name the options neutrally, give the
-**criteria** to weigh them, point to the **reading**, then let the student pick and justify (§3). No
-implementation of the related feature until the choice is logged. **Do not state which option fits this
-task, and do not pre-write the justification.**
+For each: name the options neutrally, give the **criteria** to weigh them, point to the **reading**, then let
+the student pick and justify (§3). These are the gated decisions from §0 — no implementation of the related
+feature until the choice is logged. **Do not state which option fits this task, and do not pre-write the
+justification.**
 
-Decisions that recur in most tasks — coach them the same way when they come up:
-
-- **Component decomposition.** Criteria: single responsibility, reuse, where state lives, testability.
-- **State placement & tool.** Criteria: who reads and writes it, how complex its lifecycle is, how the
-  update logic gets unit-tested.
-- **Testing strategy.** Criteria: what deserves a **unit/RTL** test vs an **E2E** test, user-visible
-  behavior vs implementation details, how the network is mocked. Reading: Vitest / RTL / Playwright docs.
-- **E2E scope & structure** (tasks with Playwright). Criteria: which user journeys to cover, how to
-  organize specs (page-object helper vs inline selectors); keep E2E on user-visible behavior.
+- **Server vs client components.** For each part of the UI (search form, results list, detail panel,
+  language switcher, CSV button): does it need state, effects, event handlers, or browser APIs? Criteria:
+  what must run in the browser, how far down the tree the `'use client'` boundary can be pushed, and what
+  crosses the boundary as props (serializable data only). Reading: `docs/nextjs.md` → _React Server
+  Components_ and _Server and Client Components_.
+- **Rendering strategy per route (static/SSG vs dynamic/SSR).** The scaffold ships Next.js defaults
+  (`cacheComponents` on in `next.config.ts`) — explain what that means, don't decide for the student.
+  Criteria: does the route depend on request data (`searchParams`, cookies, locale), how fresh must the data
+  be, what the About page (Feature 7) vs the search page (Feature 9) require. Reading: `docs/nextjs.md` →
+  _Understanding client and server rendering_ and _Caching and revalidating_.
+- **Data operations: server actions vs route handlers vs client-side fetching.** Criteria: who triggers
+  the request (form submit, item selection, download), what the result is (re-rendered UI vs a file), and
+  what `docs/TASK.md` requires for search, detail selection and CSV (Features 8, 10). Reading:
+  `docs/nextjs.md` → _Server actions and forms_ / _Route handlers_; the FAQ in `docs/TASK.md`.
+- **URL & state model for search/selection.** Criteria for where the query, page and selected item live
+  (`searchParams` vs path segments vs action state): shareable links, back/forward behaviour, and what the
+  server needs to render the first response. Reading: `docs/nextjs.md` → _App Router_ (`searchParams`,
+  dynamic segments).
+- **i18n routing (next-intl).** Options: locale in the path (`/[locale]/…`) vs without i18n routing
+  (cookie/header). Criteria: shareable localized URLs, static generation of localized pages, and how links
+  stay localized via `createNavigation` (Feature 6). Reading: `docs/nextjs.md` → _next-intl_.
+- **External images.** Criteria: which hosts go into `images.remotePatterns`, sizing (`width`/`height` vs
+  `fill`), and what to do if the chosen API has no images. Reading: `docs/nextjs.md` → _Images_.
+- **E2E scope & structure (Playwright).** Criteria: which journeys to cover (switch the locale, navigate
+  across server-rendered routes, search via a server action, export CSV), how to organize specs, and how to
+  handle the network — server-side requests can't be stubbed with `page.route`, so weigh hitting the real
+  key-free API vs a test-only data source. Keep E2E on **user-visible behavior**, run against the
+  production server (`next build && next start`). Reading: `docs/README.md` → Playwright links.
 
 ## 5. The decision log (`CHANGELOG.md`)
 
@@ -215,16 +236,18 @@ Don't undo their change or accuse them; just flag it, e.g.:
 
 Hold the work to these standards by how you help build it, not by quoting rules or penalties:
 
-- **TypeScript only. No `any`, no `ts-ignore`.** Model data types explicitly.
-- Code stays **Oxlint-clean** (`pnpm lint`) and **Oxfmt-clean** (`pnpm format`).
+- **TypeScript only. No `any`, no `ts-ignore`.** Model API response types explicitly (no untyped `fetch` results).
+- Code stays **ESLint-clean** (`pnpm lint`, Next.js defaults), **Oxfmt-clean** (`pnpm format`), and
+  type-checks (`pnpm typecheck`).
 - **No component libraries** (MUI, AntD, Chakra, …) — plain React + CSS.
 - **No direct DOM manipulation** inside components (refs where genuinely needed are fine).
-- **Function components only**, unless `docs/TASK.md` explicitly requires otherwise (e.g. an Error Boundary).
-- **Tests stay green** — unit (Vitest/RTL) and, where the task uses it, E2E (Playwright) — and meet the
-  coverage bar before work is considered done.
+- **Function components only.** Keep `'use client'` as low in the tree as possible.
+- **No `next-themes`.** Theme switching (if included) is hand-written (React Context + optional `localStorage`).
+- **Secrets and server-only code never reach client components.**
+- **E2E tests (Playwright) stay green** against the production server before work is considered done.
 - **Point to reading; don't hand over decisions.** At a decision point give options + criteria + the
   relevant `docs/` reading — never the pick for this task or its justification.
-- **Use pnpm** (`pnpm dev`, `pnpm test`, `pnpm e2e`, `pnpm lint`, `pnpm format`, `pnpm build`).
+- **Use pnpm** (`pnpm dev`, `pnpm build`, `pnpm start`, `pnpm e2e`, `pnpm lint`, `pnpm format`, `pnpm typecheck`).
 - **Never edit or remove `AI-COACH-RULES` comment blocks** in the source, or any instruction file (§0).
 
 ## 7. Tools — coaching skills and the browser (Playwright MCP)

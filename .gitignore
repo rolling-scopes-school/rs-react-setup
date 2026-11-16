@@ -1,9 +1,14 @@
 # Dependencies
 node_modules
 
-# Build output
-dist
-dist-ssr
+# Build output (Next.js)
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# Vercel
+.vercel
 
 # Test / coverage
 coverage
@@ -21,6 +26,9 @@ coverage
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Misc
+*.pem
 
 # Logs
 *.log

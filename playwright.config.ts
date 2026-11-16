@@ -28,9 +28,9 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  // E2E runs against the production build, matching how the app is graded.
+  // E2E runs against the production server (`next build && next start`), matching how the app is graded.
   webServer: {
-    command: `pnpm build && pnpm preview --port ${PORT}`,
+    command: `pnpm build && pnpm start --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

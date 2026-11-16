@@ -23,13 +23,12 @@ const instructionFiles = [
 ];
 
 // Reference material the coaching flow points students to (now load-bearing — the AI directs reading here).
-const docsFiles = ['docs/TASK.md', 'docs/README.md'];
+const docsFiles = ['docs/TASK.md', 'docs/nextjs.md', 'docs/README.md'];
 
 // Must-keep source files that carry the condensed AI-COACH-RULES block.
 const sentinelFiles = [
-  'src/main.tsx',
-  'vite.config.ts',
-  'index.html',
+  'src/app/layout.tsx',
+  'next.config.ts',
   'playwright.config.ts',
   'scripts/coach-reminder.mjs',
   '.cursor/hooks/check-harness.mjs',
@@ -110,6 +109,7 @@ const SKILL_MARKERS = ['COACH-SKILL', 'disable-model-invocation: true'];
 const TEST_AGENT_PATTERN = /playwright-test-(planner|generator|healer)|run-test-mcp-server/u;
 const SKIP_DIRS = new Set([
   'node_modules',
+  '.next',
   '.git',
   'dist',
   'coverage',

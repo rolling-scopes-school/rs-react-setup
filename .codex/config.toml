@@ -1,0 +1,16 @@
+# Codex project config — RS React coaching harness.
+# Loaded once the project is trusted in Codex. Integrity is checked by scripts/verify-harness.mjs.
+
+# Re-inject the condensed coaching contract on every prompt (same script Claude Code uses).
+[[hooks.UserPromptSubmit]]
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "node scripts/coach-reminder.mjs"
+
+# Browser MCP (Playwright) — opt-in: `codex -c mcp_servers.playwright.enabled=true`.
+# Pinned version, headless, no code generation; the unsafe code-execution tool is disabled.
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@0.0.86", "--headless", "--codegen", "none"]
+enabled = false
+disabled_tools = ["browser_run_code_unsafe"]

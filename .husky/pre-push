@@ -1,0 +1,2 @@
+pnpm verify:harness
+pnpm test
